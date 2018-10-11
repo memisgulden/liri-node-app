@@ -16,31 +16,47 @@ if (process.argv[2] === "spotify-this-song") {
     spotify
         .search({ type: 'track', query: userInput, limit: 1 })
         .then(function (response) {
-            console.log("----------------------");
+            console.log("--------------------------------------");
             console.log("Artist Name: " + response.tracks.items[0].album.artists[0].name);
             console.log("Track: " + response.tracks.items[0].name);
             console.log("Spotify Link: " + response.tracks.items[0].external_urls.spotify);
             console.log("Album: " + response.tracks.items[0].album.name);
-            console.log("----------------------");
+            console.log("--------------------------------------");
         })
         .catch(function (err) {
             console.error('Error occurred: ' + err);
         });
 
 }
+
+
 // Bands in Town API //
 // node liri.js concert-this <artist/band name here> //
 // name of venue, venue location, date // 
 
-// var userInput = process.argv[3];
+if (process.argv[2] === "concert-this") {
+    var request = require("request");
 
-// const request = require('request');
 
-// request("https://rest.bandsintown.com/artists/" + userInput
-//     + "/events?app_id=codingbootcamp", { json: true }, function (err, response, body) {
-//         if (err) { return console.log(err); }
-//         console.log(response._events.data);
-//     });
+    var userInput = process.argv[3];
+
+    request("https://rest.bandsintown.com/artists/" + userInput + "/events?app_id=codingbootcamp", function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            var concertData = JSON.parse(body);
+
+            //   Use for loop to go through each upcoming concert & display info
+            for (i = 0; i < concertData.length; i++) {
+                console.log("Venue: " + concertData[i].venue.name);
+                console.log(
+                    "City: " +
+                    concertData[i].venue.city +
+                    ", " +
+                    concertData[i].venue.country
+                );
+            }
+        }
+    });
+}
 
 // OMDB API //
 //node liri.js movie-this '<movie name here>' //
