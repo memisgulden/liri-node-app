@@ -32,7 +32,6 @@ if (process.argv[2] === "spotify-this-song") {
 
 // Bands in Town API //
 // node liri.js concert-this <artist/band name here> //
-// name of venue, venue location, date // 
 
 if (process.argv[2] === "concert-this") {
     var request = require("request");
@@ -46,6 +45,7 @@ if (process.argv[2] === "concert-this") {
 
             //   Use for loop to go through each upcoming concert & display info
             for (i = 0; i < concertData.length; i++) {
+                console.log("--------------------------------------");
                 console.log("Venue: " + concertData[i].venue.name);
                 console.log(
                     "City: " +
@@ -53,6 +53,9 @@ if (process.argv[2] === "concert-this") {
                     ", " +
                     concertData[i].venue.country
                 );
+                console.log(concertData[i].datetime);
+                console.log("--------------------------------------");
+
             }
         }
     });
@@ -84,3 +87,50 @@ if (process.argv[2] === "movie-this") {
         }
     })
 }
+
+// Read File FS //
+// node liri.js do-what-it-says //
+
+if (process.argv[2] === "do-what-it-says") {
+
+    var fs = require("fs");
+
+    fs.readFile("random.txt", "utf8", function (error, data) {
+
+        if (error) {
+            return console.log(error);
+        }
+
+        var dataArr = data.split(",");
+
+        var Spotify = require('node-spotify-api');
+
+        var spotify = new Spotify({
+            id: process.env.SPOTIFY_ID,
+            secret: process.env.SPOTIFY_SECRET,
+        });
+
+        var userInput = dataArr[1];;
+
+        spotify
+            .search({ type: 'track', query: userInput, limit: 1 })
+            .then(function (response) {
+                console.log("--------------------------------------");
+                console.log("Artist Name: " + response.tracks.items[0].album.artists[0].name);
+                console.log("Track: " + response.tracks.items[0].name);
+                console.log("Spotify Link: " + response.tracks.items[0].external_urls.spotify);
+                console.log("Album: " + response.tracks.items[0].album.name);
+                console.log("--------------------------------------");
+            })
+            .catch(function (err) {
+                console.error('Error occurred: ' + err);
+            });
+
+
+
+    });
+
+}
+
+
+
